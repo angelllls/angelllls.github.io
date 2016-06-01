@@ -1,1 +1,3 @@
-http://www.cnblogs.com/LiteraturePan/
+<?php
+echo date('Y-m-d',strtotime('yesterday'));
+?>
