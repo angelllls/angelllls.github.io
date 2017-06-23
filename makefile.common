@@ -1,0 +1,14 @@
+
+#顶层位置
+ROOT=$(shell pwd)
+
+
+#你的名字
+your.name=angelllls
+#
+your.address=617253589@qq.com
+
+
+submodule= PRO/d.aider
+ 
+
