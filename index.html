@@ -1,22 +1,35 @@
-<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>菜鸟教程(runoob.com)</title>
-<script>
-function displayDate(){
-	document.getElementById("demo").innerHTML=Date();
-}
-</script>
+<head><title>访问XML文档，获取图书信息</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 <body>
-
-<h1>我的第一个 JavaScript 程序</h1>
-<p id="demo">这是一个段落</p>
-
-<button type="button" onclick="displayDate()">显示日期</button>
-<a href="3d-html5-logo/index.html">
-html5
-</a>
+<script type="text/javascript">
+function ReadFiles()
+{
+   var fso, f1, ts, s;
+   var ForReading = 1;
+   fso = new ActiveXObject("Scripting.FileSystemObject");
+   f1 = fso.CreateTextFile("c:\\testfile.txt", true);
+   // 写一行。
+   Response.Write("Writing file <br>");
+   f1.WriteLine("Hello World");
+   f1.WriteBlankLines(1);
+   f1.Close();
+   // 读取文件的内容。
+   Response.Write("Reading file <br>");
+   ts = fso.OpenTextFile("test", ForReading);
+   s = ts.ReadLine();
+   Response.Write("File contents = '" + s + "'");
+  alert(s);
+   ts.Close();
+}
+</script>
+<table style="width:200px;">
+    <tr><td>书名：</td><td id="td_bookname"></td></tr>
+    <tr><td>作者：</td><td id="td_author"></td></tr>
+    <tr><td>页数：</td><td id="td_pages"></td></tr>
+<button type="button" onclick="ReadFiles()">点击这里</button>
+</table>
 </body>
 </html>
+
