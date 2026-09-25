@@ -1,35 +1,716 @@
-<html>
-<head><title>访问XML文档，获取图书信息</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROJECT PROTOCOL — 新体制与递归演进纲领</title>
+  <meta name="description" content="脱离传统脉络，以积累、探索与高效为核心，人、生灵与超AI共享生存。">
+  
+  <!-- 引入更加温和、舒适、高级的现代人文排版字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* 更温润舒适的灰墨色调，脱离死黑与高冷刺眼，带来如同特种纸墨印的舒适阅读感 */
+      --bg: #121316;
+      --bg-surface: #181a1f;
+      --bg-card: #16181d;
+      --border: rgba(255, 255, 255, 0.07);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      
+      --text-primary: #e6e8ec;
+      --text-muted: #9aa0ac;
+      --text-dim: #606675;
+      
+      --accent: #d2d7e2;
+      --accent-warm: #cbbba0;
+      
+      --font-serif: 'Newsreader', serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      /* 柔和且克制的环境光 */
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(203, 187, 160, 0.035) 0%, transparent 50%),
+        radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.015) 0%, transparent 40%);
+    }
+
+    /* 顶部极简导航 */
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+      background: rgba(18, 19, 22, 0.8);
+    }
+
+    .brand {
+      text-decoration: none;
+      color: var(--text-primary);
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.03em;
+      transition: color 0.25s var(--ease);
+    }
+
+    nav a:hover { color: var(--text-primary); }
+
+    .nav-btn {
+      padding: 0.4rem 1.1rem;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      color: var(--text-primary);
+      transition: all 0.25s var(--ease);
+    }
+
+    .nav-btn:hover {
+      border-color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* 首屏 Hero */
+    section.hero {
+      padding-top: 13rem;
+      padding-bottom: 7rem;
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .tag-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.75rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      color: var(--text-muted);
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.3rem, 4.4vw, 3.8rem);
+      line-height: 1.25;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      margin-bottom: 2.5rem;
+      color: #f7f8fa;
+    }
+
+    .hero-title span.emphasis {
+      font-style: italic;
+      color: var(--accent-warm);
+    }
+
+    .hero-manifesto {
+      font-size: clamp(1.05rem, 1.3vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 800px;
+      line-height: 1.9;
+      font-weight: 300;
+      margin-bottom: 3.5rem;
+    }
+
+    .hero-manifesto strong { color: var(--text-primary); font-weight: 400; }
+
+    .hero-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .hero-actions { display: flex; gap: 1.2rem; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--text-primary);
+      color: var(--bg);
+      text-decoration: none;
+      padding: 0.75rem 1.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 99px;
+      transition: all 0.25s var(--ease);
+    }
+
+    .btn-primary:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: transparent;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.75rem 1.8rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      transition: all 0.25s var(--ease);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* 章节通用 */
+    section { padding: 7rem 0; border-top: 1px solid var(--border); }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      margin-bottom: 4.5rem;
+      gap: 2rem;
+    }
+
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .section-heading {
+      font-family: var(--font-serif);
+      font-size: 2.1rem;
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--text-primary);
+    }
+
+    /* 发起人叙述 */
+    .persona-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 4.5rem;
+      align-items: start;
+    }
+
+    .persona-card {
+      border: 1px solid var(--border);
+      padding: 2.2rem 1.8rem;
+      background: var(--bg-surface);
+      border-radius: 6px;
+      position: sticky;
+      top: 100px;
+    }
+
+    .persona-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .persona-title {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      margin-bottom: 0.4rem;
+      font-weight: 400;
+    }
+
+    .persona-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+    }
+
+    .persona-stats {
+      border-top: 1px solid var(--border);
+      padding-top: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      font-size: 0.8rem;
+    }
+
+    .persona-stats-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .persona-stats-item span { color: var(--text-dim); font-size: 0.75rem; }
+    .persona-stats-item p { color: var(--text-primary); }
+
+    .persona-narrative {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .persona-narrative p { margin-bottom: 1.8rem; }
+    .persona-narrative strong { color: var(--text-primary); font-weight: 400; }
+
+    .quote-box {
+      margin: 2.8rem 0;
+      padding: 2rem 2.2rem;
+      border-left: 2px solid var(--accent-warm);
+      background: rgba(203, 187, 160, 0.03);
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-primary);
+      line-height: 1.65;
+    }
+
+    /* 项目卡片列表 */
+    .protocol-matrix { display: flex; flex-direction: column; gap: 1.8rem; }
+
+    .protocol-card {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      padding: 2.8rem 3rem;
+      border-radius: 6px;
+      transition: all 0.3s var(--ease);
+      position: relative;
+    }
+
+    .protocol-card:hover {
+      border-color: var(--border-hover);
+      background: rgba(24, 26, 31, 0.95);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-index {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    /* 右上角指引参与链接 */
+    .card-action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent-warm);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 400;
+      border-bottom: 1px solid transparent;
+      transition: all 0.2s var(--ease);
+    }
+
+    .card-action-link:hover {
+      border-color: var(--accent-warm);
+      opacity: 0.85;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .card-desc {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    /* 结语 / 招募 / 捐赠 / 长远投资 */
+    .engage-section {
+      background: radial-gradient(circle at 50% 100%, rgba(203, 187, 160, 0.04) 0%, transparent 60%);
+      padding-bottom: 9rem;
+    }
+
+    .engage-box {
+      border: 1px solid var(--border);
+      padding: 4.5rem 3.5rem;
+      background: var(--bg-surface);
+      border-radius: 8px;
+      max-width: 860px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .engage-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 3.2vw, 2.7rem);
+      margin-bottom: 1.2rem;
+      font-weight: 400;
+    }
+
+    .engage-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.85;
+      max-width: 680px;
+      margin: 0 auto 3rem auto;
+      font-weight: 300;
+    }
+
+    /* 参与形式三栏卡片 */
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .support-card {
+      border: 1px solid var(--border);
+      padding: 1.8rem 1.6rem;
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .support-type {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-warm);
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+
+    .support-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .support-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* 联络对话框 */
+    .contact-card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      border: 1px solid var(--border);
+      padding: 2rem 3rem;
+      background: var(--bg);
+      border-radius: 6px;
+      margin: 0 auto;
+    }
+
+    .contact-email {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid var(--text-dim);
+      padding-bottom: 0.2rem;
+      transition: border-color 0.25s var(--ease);
+    }
+
+    .contact-email:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+
+    .contact-note { font-size: 0.8rem; color: var(--text-dim); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .footer-links { display: flex; gap: 2rem; }
+    .footer-links a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-primary); }
+
+    @media (max-width: 860px) {
+      header { padding: 0 1.5rem; }
+      .container { padding: 0 1.5rem; }
+      section.hero { padding-top: 8.5rem; }
+      .section-header { grid-template-columns: 1fr; gap: 0.8rem; }
+      .persona-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .persona-card { position: static; }
+      .protocol-card { padding: 2.2rem 1.8rem; }
+      .engage-box { padding: 3rem 1.5rem; }
+      footer { flex-direction: column; gap: 1.5rem; padding: 2.5rem 1.5rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-<script type="text/javascript">
-function ReadFiles()
-{
-   var fso, f1, ts, s;
-   var ForReading = 1;
-   fso = new ActiveXObject("Scripting.FileSystemObject");
-   f1 = fso.CreateTextFile("c:\\testfile.txt", true);
-   // 写一行。
-   Response.Write("Writing file <br>");
-   f1.WriteLine("Hello World");
-   f1.WriteBlankLines(1);
-   f1.Close();
-   // 读取文件的内容。
-   Response.Write("Reading file <br>");
-   ts = fso.OpenTextFile("test", ForReading);
-   s = ts.ReadLine();
-   Response.Write("File contents = '" + s + "'");
-  alert(s);
-   ts.Close();
-}
-</script>
-<table style="width:200px;">
-    <tr><td>书名：</td><td id="td_bookname"></td></tr>
-    <tr><td>作者：</td><td id="td_author"></td></tr>
-    <tr><td>页数：</td><td id="td_pages"></td></tr>
-<button type="button" onclick="ReadFiles()">点击这里</button>
-</table>
+
+  <!-- 顶部导航 -->
+  <header>
+    <a href="#" class="brand">Project Protocol</a>
+    <nav>
+      <a href="#projects">项目清单</a>
+      <a href="#engage" class="nav-btn">参与 / 投资</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    
+    <!-- Hero 首屏 -->
+    <section class="hero">
+      <div>
+        <div class="hero-meta">
+          <span class="tag-badge">Private Archive</span>
+          <span class="tag-badge" style="color: var(--accent-warm);">Open for Engagement</span>
+        </div>
+        <h1 class="hero-title">
+          脱离传统脉络，<br>
+          构建<span class="emphasis">高效且务实</span>的未来体制。<br>
+          以<span class="emphasis">积累 · 探索 · 高效</span>为核，人与生灵及超AI共享生存。
+        </h1>
+        <p class="hero-manifesto">
+          打破旧有文明体系中的冗余与损耗，由时尚设计师从哲学与形式底层亲手发起：从超级语言、通用设计到超级AI，以手工器件为起始进行纯产物闭环递归制造，逼近原子尺寸并切入生化，让<strong>人、万物生灵与超级AI在自洽的物质与认知秩序中共享生存，终达长寿</strong>。
+        </p>
+      </div>
+
+      <div class="hero-footer">
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">是否有你感兴趣的项目 →</a>
+          <a href="#engage" class="btn-ghost">参与 / 捐赠 / 投资</a>
+        </div>
+        <div>
+          <span>HOSTED VIA GITHUB PAGES</span>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- 项目清单 -->
+    <section id="projects">
+      <div class="section-header">
+        <span class="section-eyebrow">01 / Projects</span>
+        <h2 class="section-heading">是否有你感兴趣的项目</h2>
+      </div>
+
+      <div class="protocol-matrix">
+        
+        <!-- Module 1 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">01 / AXIOM</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">哲学方面：信息论与系统论突破，建立全新学术体系</h3>
+          <p class="card-desc">
+            全面抛开以往学术体系的教条与桎梏。在信息与系统的最底层直面物质演变与规律，重构一套全自洽的全新认识论与学术公理大厦，作为一切后续创造的思想之源。
+          </p>
+        </article>
+
+        <!-- Module 2 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">02 / LANGUAGE</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">超级语言</h3>
+          <p class="card-desc">
+            一种全新的语言体系。它不是计算机编程语法的修补，也不是人类自然口语的归纳，而是一种能够精准、无损对应宇宙客观系统运转与思维深层结构的超验媒介。
+          </p>
+        </article>
+
+        <!-- Module 3 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">03 / DESIGN</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">基于超级语言下的通用设计</h3>
+          <p class="card-desc">
+            在超级语言的地基之上，展开对万事万物的“通用设计”。将审美直觉、空间构成、信息流动与功能实体在全新的设计法则中融为一体，重构所有造物的形态规则。
+          </p>
+        </article>
+
+        <!-- Module 4 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">04 / COGNITION</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">基于超级语言下的超级 AI</h3>
+          <p class="card-desc">
+            彻底脱离现有统计概率大模型的局限。以超级语言作为其本源认知系统，诞生出真正具备深层推演、理解物理本质与自我进化的原生超级 AI。
+          </p>
+        </article>
+
+        <!-- Module 5 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">05 / INSTRUMENT</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">超级 AI 的辅助工具：现象 / 分子研究实验盒</h3>
+          <p class="card-desc">
+            专门作为超级 AI 延展至物理微观世界的“感官与试手箱”。用于实时观测、捕捉、解析微观物理现象与分子层面的动态变化，实现认知与物质实验的实时咬合。
+          </p>
+        </article>
+
+        <!-- Module 6 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">06 / OPERATING SYSTEM</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">Linux 超级系统改造计划</h3>
+          <p class="card-desc">
+            对现代操作系统基石 Linux 进行彻底颠覆式的重塑。去除历史沉疴与过时机制，注入超级语言和全新系统设计理念，使其进化为承载超级 AI 与前沿研究的轻灵超级系统。
+          </p>
+        </article>
+
+        <!-- Module 7 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">07 / MATERIAL GENESIS</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">递归制造与技术积累：从手工简单器件逼近原子级，转入生物化学</h3>
+          <p class="card-desc">
+            拒绝依赖外部庞大工业链条。从亲手制作极简的物理器件起步，随后<strong>仅依靠产物递归制造产物</strong>。每一代器件制造出更高精度的下一代母体，层层递进，逐步收敛至原子级尺度，并最终自然转入生物化学领域。
+          </p>
+        </article>
+
+        <!-- Module 8 -->
+        <article class="protocol-card">
+          <div class="card-head">
+            <span class="card-index">08 / ULTIMATE HORIZON</span>
+            <a href="#engage" class="card-action-link">参与该项目研讨 / 投入 →</a>
+          </div>
+          <h3 class="card-title">长寿计划</h3>
+          <p class="card-desc">
+            当递归制造成功穿透至原子与生物化学尺度，并与超级 AI 及分子实验盒合流时，对生命极限的重塑成为必然。从系统和分子的底层逆转衰退，拓展人类肉体与生命的全新尺度。
+          </p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 参与 / 捐赠 / 长远投资 -->
+    <section id="engage" class="engage-section">
+      <div class="engage-box">
+        <h2 class="engage-title">参与研讨 · 自由捐赠 · 长远投资</h2>
+        <p class="engage-subtitle">
+          无论你是渴望加入具体模块共研的思想者、手作者，还是认可这一高效务实新体制的长远支持者，我们均持开放而纯粹的态度。
+        </p>
+
+        <!-- 形式矩阵 -->
+        <div class="support-grid">
+          <div class="support-card">
+            <span class="support-type">COLLABORATION</span>
+            <h4 class="support-title">思想与技术共研</h4>
+            <p class="support-desc">针对上述 8 个独立项目，以个人的核心思考、手作器件方案或代码/理论实验深度介入。</p>
+          </div>
+          
+          <div class="support-card">
+            <span class="support-type">DONATION</span>
+            <h4 class="support-title">自由非定向捐赠</h4>
+            <p class="support-desc">为手工器件制作、分子盒物理材料采购与自驱实验提供纯粹的燃料支持，无任何外部利益绑架。</p>
+          </div>
+
+          <div class="support-card">
+            <span class="support-type">LONG-TERM VENTURE</span>
+            <h4 class="support-title">长远战略投资</h4>
+            <p class="support-desc">放眼于超级语言、递归制造母机与长寿体系落地带来的终极红利，共同见证文明阶梯的构建。</p>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <span class="contact-note">直接联系设计者本人（请在来信中注明你的意向：项目共研 / 捐赠支持 / 长远投资）：</span>
+          <a href="mailto:your-email@example.com" class="contact-email">your-email@example.com</a>
+          <span class="contact-note">真诚交流 · 见信即复 · 支持 PGP / 密码学货币 / 离线对话</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    <div>
+      <span>PROJECT PROTOCOL © 2026. A NEW ORDER OF ACCUMULATION & COEXISTENCE.</span>
+    </div>
+    <div class="footer-links">
+      <a href="#projects">项目列表</a>
+      <a href="#engage">捐赠与投资</a>
+    </div>
+  </footer>
+
 </body>
 </html>
-
