@@ -86,12 +86,24 @@
     }
 
     .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       text-decoration: none;
       color: var(--text-primary);
       font-family: var(--font-serif);
       font-size: 1.15rem;
       font-style: italic;
       letter-spacing: 0.02em;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--border);
     }
 
     nav {
@@ -475,26 +487,53 @@
       display: inline-flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.8rem;
+      gap: 1.2rem;
       border: 1px solid var(--border);
-      padding: 2rem 3rem;
+      padding: 2.2rem 3rem;
       background: var(--bg);
       border-radius: 6px;
       margin: 0 auto;
+      max-width: 580px;
+      width: 100%;
     }
 
-    .contact-email {
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      margin: 0.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 0;
+      font-size: 0.95rem;
+    }
+
+    .contact-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
       font-family: var(--font-mono);
-      font-size: 1.15rem;
+      font-size: 0.9rem;
+    }
+
+    .contact-item span.label {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .contact-item a, .contact-item span.val {
       color: var(--text-primary);
       text-decoration: none;
-      letter-spacing: 0.03em;
-      border-bottom: 1px solid var(--text-dim);
-      padding-bottom: 0.2rem;
-      transition: border-color 0.25s var(--ease);
+      transition: color 0.2s var(--ease);
     }
 
-    .contact-email:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+    .contact-item a:hover {
+      color: var(--accent-warm);
+    }
 
     .contact-note { font-size: 0.8rem; color: var(--text-dim); }
 
@@ -529,7 +568,10 @@
 
   <!-- 顶部导航 -->
   <header>
-    <a href="#" class="brand">Project Protocol</a>
+    <a href="#" class="brand">
+      <img src="logo.jpg" alt="Logo" class="brand-logo">
+      <span>Project Protocol</span>
+    </a>
     <nav>
       <a href="#projects">项目清单</a>
       <a href="#engage" class="nav-btn">参与 / 投资</a>
@@ -706,9 +748,24 @@
         </div>
 
         <div class="contact-card">
-          <span class="contact-note">直接联系设计者本人（请在来信中注明你的意向：项目共研 / 捐赠支持 / 长远投资）：</span>
-          <a href="mailto:your-email@example.com" class="contact-email">your-email@example.com</a>
-          <span class="contact-note">真诚交流 · 见信即复 · 支持 PGP / 密码学货币 / 离线对话</span>
+          <span class="contact-note">直接联系发起人（来信请注明意向：项目共研 / 捐赠支持 / 长远投资）</span>
+          
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="label">Email</span>
+              <a href="mailto:617253589@qq.com">617253589@qq.com</a>
+            </div>
+            <div class="contact-item">
+              <span class="label">WeChat</span>
+              <span class="val">angelllls</span>
+            </div>
+            <div class="contact-item">
+              <span class="label">Tel / Phone</span>
+              <a href="tel:+8613535807325">+86 13535807325</a>
+            </div>
+          </div>
+
+          <span class="contact-note">真诚交流 · 见信即复 · 支持离线对话 / 深度研讨</span>
         </div>
       </div>
     </section>
